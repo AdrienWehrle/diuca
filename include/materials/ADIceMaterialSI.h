@@ -33,7 +33,7 @@ protected:
   const ADVariableGradient & _grad_velocity_z;
 
   // Finite strain rate parameter
-  const ADReal & _II_eps_min;
+  const Real & _II_eps_min;
   const ADVariableValue & _pressure;
 
   /// viscosity of the fluid (mu)

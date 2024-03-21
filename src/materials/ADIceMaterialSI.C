@@ -21,9 +21,10 @@ ADIceMaterialSI::validParams()
 
   params.addParam<ADReal>("nGlen", 3., "Glen exponent");   //
   params.addParam<ADReal>("density", 917., "Ice density"); // kgm-3
-
+  
   // Minimum strain rate parameter
-  params.addParam<ADReal>("II_eps_min", 1e-25, "Finite strain rate parameter"); // s-1
+  params.addParam<Real>("II_eps_min", 1e-25, "Finite strain rate parameter"); // s-1
+  params.declareControllable("II_eps_min"); // s-1
   
   return params;
 }
@@ -47,7 +48,7 @@ ADIceMaterialSI::ADIceMaterialSI(const InputParameters & parameters)
     _grad_velocity_z(_mesh_dimension == 3 ? adCoupledGradient("velocity_z") : _ad_grad_zero),
 
     // Finite strain rate parameter
-    _II_eps_min(getParam<ADReal>("II_eps_min")),
+    _II_eps_min(getParam<Real>("II_eps_min")),
 
     // Mean stress
     _pressure(adCoupledValue("pressure")),

@@ -24,10 +24,17 @@ _dt = '${fparse nb_years * 3600 * 24 * 365}'
 inlet_mph = 0.1 # 0.1 # mh-1
 inlet_mps = '${fparse inlet_mph / 3600}' # ms-1
 
+initial_II_eps_min = 1e-25
+
 # ------------------------
 
-[Mesh]
+# [Problem]
+#   # near_null_space_dimension = 1
+#   null_space_dimension = 1
+#   transpose_null_space_dimension = 1
+# []
 
+[Mesh]
 
   [channel]      
   type = FileMeshGenerator
@@ -40,27 +47,27 @@ inlet_mps = '${fparse inlet_mph / 3600}' # ms-1
     input = channel
     block = '3'
   []
-  # [frontal_zone]
-  #   type = SubdomainBoundingBoxGenerator
-  #   input = 'channel'
-  #   block_id = 10
-  #   bottom_left = '20000 -1000 -3000'
-  #   top_right = '19000  15000 3000'
-  # []
-  # [refined_front]
-  #   type = RefineBlockGenerator
-  #   input = "frontal_zone"
-  #   block = '10'
-  #   refinement = '2'
-  #   enable_neighbor_refinement = true
-  # []
+  [frontal_zone]
+    type = SubdomainBoundingBoxGenerator
+    input = 'delete_sediment_block'
+    block_id = 10
+    bottom_left = '20000 -1000 -3000'
+    top_right = '19000  15000 3000'
+  []
+  [refined_front]
+    type = RefineBlockGenerator
+    input = "frontal_zone"
+    block = '10'
+    refinement = '1'
+    enable_neighbor_refinement = true
+  []
   # [mesh_combined_interm]
   #   type = CombinerGenerator
   #   inputs = 'channel refined_front'
   # []
   [pin_pressure_node]
     type = BoundingBoxNodeSetGenerator
-    input = 'delete_sediment_block'
+    input = 'refined_front'
     bottom_left = '19599.99 -0.00001 99.9999'
     top_right = '19600.001 0.000001 100.001'
     new_boundary = 'pressure_pin_node'
@@ -242,6 +249,7 @@ inlet_mps = '${fparse inlet_mph / 3600}' # ms-1
     pressure = "p"
     output_properties = "mu"
     outputs = "out"
+    II_eps_min = "${initial_II_eps_min}"
   []
   [ins_mat]
     type = INSADTauMaterial
@@ -253,13 +261,30 @@ inlet_mps = '${fparse inlet_mph / 3600}' # ms-1
 [Functions]
   [ocean_pressure]
     type = ParsedFunction
-    expression = 'if(z < 0, -1028 * 9.81 * z, 0)'
+    expression = 'if(z < 0, -1028 * 9.81 * z, 1e5)'
   []
   [ice_weight]
     type = ParsedFunction
     expression = '917 * 9.81 * (100 - z)'
   []
+  [viscosity_rampup]
+    type = ParsedFunction
+    expression = 'initial_II_eps_min * exp(-(t-_dt) * 1e-6)'
+    # expression = 'initial_II_eps_min * exp((t - _dt) * 1e-7)'
+    symbol_names = '_dt initial_II_eps_min'
+    symbol_values = '${_dt} ${initial_II_eps_min}'
+  []
 []
+
+# [Controls]
+#   [II_eps_min_control]
+#     type = RealFunctionControl
+#     parameter = 'Materials/ice/II_eps_min'
+#     function = 'viscosity_rampup'
+#     execute_on = 'initial timestep_begin'
+#   []
+# []
+
 
 [Preconditioning]
   [SMP]
@@ -269,14 +294,16 @@ inlet_mps = '${fparse inlet_mph / 3600}' # ms-1
     # petsc_options = '-pc_svd_monitor'
     # petsc_options_iname = '-pc_type'
     # petsc_options_value = 'svd'
-    petsc_options_iname = '-pc_type -pc_factor_shift -pc_mat_solve_package'
-    petsc_options_value = 'lu       NONZERO mumps'
+    petsc_options_iname = '-pc_type -pc_factor_shift -pc_mat_solve_package -fieldsplit_velocity_pc_type'
+    petsc_options_value = 'lu       NONZERO mumps hypre'
+
+    # -fieldsplit_velocity_pc_type gamg or ml or hypre
   []
 []
 
 [Executioner]
   type = Transient
-  # num_steps = 10
+  num_steps = 100
 
   # nl_rel_tol = 1e-08
   # nl_abs_tol = 1e-13
@@ -291,8 +318,8 @@ inlet_mps = '${fparse inlet_mph / 3600}' # ms-1
   automatic_scaling = false
 
   dt = "${_dt}"
-  steady_state_detection = true
-  steady_state_tolerance = 1e-100
+  # steady_state_detection = true
+  # steady_state_tolerance = 1e-100
 
   # [Adaptivity]
   #   interval = 1
