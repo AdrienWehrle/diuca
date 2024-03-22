@@ -63,10 +63,10 @@ FVIceMaterialSI::FVIceMaterialSI(const InputParameters & parameters)
            << std::endl;
 
   addFunctorProperty<ADReal>(
-      "rho", [this](const auto &, const auto &) -> ADReal { return _rho; }, clearance_schedule);
+      "rho_ice", [this](const auto &, const auto &) -> ADReal { return _rho; }, clearance_schedule);
 
   addFunctorProperty<ADReal>(
-      "mu",
+      "mu_ice",
       [this](const auto & r, const auto & t) -> ADReal
       {
         // Wrap term with Glen's fluidity parameter for clarity

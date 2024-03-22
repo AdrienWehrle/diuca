@@ -19,7 +19,7 @@ protected:
   const unsigned int _mesh_dimension;
 
   // density of the fluid
-  const ADReal & _rho;
+  const Real & _rho;
 
   // velocity
   const Moose::Functor<ADReal> & _vel_x;
@@ -27,11 +27,12 @@ protected:
   const Moose::Functor<ADReal> & _vel_z;
 
   // Sediment friction parameter
-  const ADReal & _FrictionCoefficient;
+  const Real & _FrictionCoefficient;
 
   // pressure
   const Moose::Functor<ADReal> & _pressure;
 
   // viscosity
   const Moose::Functor<ADReal> & _viscosity;
+  
 };

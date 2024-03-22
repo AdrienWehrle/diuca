@@ -10,8 +10,9 @@ FVSedimentMaterialSI::validParams()
   InputParameters params = FunctorMaterial::validParams();
 
   // Friction properties
-  params.addParam<ADReal>("FrictionCoefficient", 1.0, "Sediment friction coefficient");
-  
+  params.addParam<Real>("FrictionCoefficient", 1.0, "Sediment friction coefficient");
+  params.declareControllable("FrictionCoefficient");
+    
   // Get velocity gradients to compute viscosity based on second invariant
   params.addParam<MooseFunctorName>("velocity_x", "Velocity in x dimension");
   params.addParam<MooseFunctorName>("velocity_y", "Velocity in y dimension");
@@ -21,8 +22,9 @@ FVSedimentMaterialSI::validParams()
   params.addRequiredCoupledVar("pressure", "Mean stress");
 
   // Sediment density (https://tc.copernicus.org/articles/14/261/2020/)
-  params.addParam<ADReal>("density", 1850., "Ice density"); // kgm-3
-
+  params.addParam<Real>("density", 1850., "Ice density"); // kgm-3
+  params.declareControllable("density"); // kgm-3
+  
   return params;
 }
 
@@ -33,7 +35,7 @@ FVSedimentMaterialSI::FVSedimentMaterialSI(const InputParameters & parameters)
     _mesh_dimension(_mesh.dimension()),
 
     // Ice density
-    _rho(getParam<ADReal>("density")),
+    _rho(getParam<Real>("density")),
     
     // Velocities
     _vel_x(getFunctor<ADReal>("velocity_x")),
@@ -41,22 +43,22 @@ FVSedimentMaterialSI::FVSedimentMaterialSI(const InputParameters & parameters)
     _vel_z(getFunctor<ADReal>("velocity_z")),
 
     // Friction properties
-    _FrictionCoefficient(getParam<ADReal>("FrictionCoefficient")),
-    
+    _FrictionCoefficient(getParam<Real>("FrictionCoefficient")),
+
     // Pressure
     _pressure(getFunctor<ADReal>("pressure")),
 
     // Viscosity
-    _viscosity(getFunctor<ADReal>("mu"))
+    _viscosity(getFunctor<ADReal>("mu_sediment"))
 
 {
   const std::set<ExecFlagType> clearance_schedule(_execute_enum.begin(), _execute_enum.end());
 
-  addFunctorProperty<ADReal>(
-      "rho", [this](const auto &, const auto &) -> ADReal { return _rho; }, clearance_schedule);
+  addFunctorProperty<Real>(
+      "rho_sediment", [this](const auto &, const auto &) -> Real { return _rho; }, clearance_schedule);
 
   addFunctorProperty<ADReal>(
-      "mu",
+      "mu_sediment",
       [this](const auto & r, const auto & t) -> ADReal
       {
 
@@ -104,8 +106,7 @@ FVSedimentMaterialSI::FVSedimentMaterialSI(const InputParameters & parameters)
 	
         // Compute viscosity
 	ADReal viscosity = (_FrictionCoefficient * sig_m) / std::abs(sig_e); // Pas
-	// viscosity = 3.;
-	
+
 	return viscosity;
       },
       clearance_schedule);
