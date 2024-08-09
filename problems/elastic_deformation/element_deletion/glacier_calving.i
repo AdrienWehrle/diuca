@@ -36,17 +36,17 @@
   [disp_x]
     order = FIRST
     family = LAGRANGE
-    block = '1 2'
+    block = '1 2 255'
   []
   [disp_y]
     order = FIRST
     family = LAGRANGE
-    block = '1 2'
+    block = '1 2 255'
   []
   [disp_z]
     order = FIRST
     family = LAGRANGE
-    block = '1 2'
+    block = '1 2 255'
   []
 []
 
@@ -203,6 +203,24 @@
     gamma = 0.5
     block = '1 2'
   []
+  [deactivated_kernel_x]
+    type = MatDiffusion
+    block = '255'
+    variable = disp_x
+    diffusivity = 1e-7
+  []
+  [deactivated_kernel_y]
+    type = MatDiffusion
+    block = '255'
+    variable = disp_y
+    diffusivity = 1e-7
+  []
+  [deactivated_kernel_z]
+    type = MatDiffusion
+    block = '255'
+    variable = disp_z
+    diffusivity = 1e-7
+  []
 []
 
 [AuxKernels]
@@ -329,13 +347,13 @@
     index_j = 2
     block = '1 2'
   []
-  # [damage_index]
-  #   type = MaterialRealAux
-  #   variable = damage_index
-  #   property = damage_index
-  #   execute_on = timestep_end
-  #   block = '1 2 255'
-  # []
+  [damage_index]
+    type = MaterialRealAux
+    variable = damage_index
+    property = damage_index
+    execute_on = timestep_end
+    block = '1 2'
+  []
   [calving]
     type = FunctionAux
     variable = calving_boolean
@@ -363,11 +381,12 @@
     block = '1 2'
   []
   [stress]
-    type = ComputeFiniteStrainElasticStress
+    type = ComputeDamageWithoutStressUpdate
     block = '1 2'
+    damage_model = damage
   []
   # [stress]
-  #   type = ComputeDamageWithoutStressUpdate
+  #   type = ComputeDamageStress
   #   damage_model = damage
   #   block = '1 2'
   # []
@@ -377,23 +396,23 @@
     eigenstrain_name = ini_stress
     block = '1 2'
   []
-  [von_mises]
-    type = RankTwoInvariant
-    invariant = 'VonMisesStress'
-    property_name = von_mises
-    rank_two_tensor = stress
+  # [von_mises]
+  #   type = RankTwoInvariant
+  #   invariant = 'VonMisesStress'
+  #   property_name = von_mises
+  #   rank_two_tensor = stress
+  #   outputs = exodus
+  #   block = '1 2'
+  # []
+  [damage]
+    type = IceDamage
+    B = 1e-10 # arbitrary, just to keep damage well below 1
+    sig_th = 1.0
+    alpha = 1.0
     outputs = exodus
+    output_properties = damage_index
     block = '1 2'
   []
-  # [damage]
-  #   type = CustomDamageMazars
-  #   B = 0.01
-  #   sig_th = 0.11
-  #   alpha = 1.
-  #   outputs = exodus
-  #   output_properties = damage_index
-  #   block = '1 2 255'
-# []
 []
 
 [BCs]
@@ -410,12 +429,12 @@
     displacements = 'disp_x disp_y disp_z'
     []
   []
-  [downstream_dirichlet]
-    type = DirichletBC                                               
-    boundary = 'downstream'
-    variable = disp_x
-    value    = 0.0
-  []
+  # [downstream_dirichlet]
+  #   type = DirichletBC                                               
+  #   boundary = 'downstream'
+  #   variable = disp_x
+  #   value    = 0.0
+  # []
   [anchor_bottom_x]
     type = DirichletBC
     variable = disp_x
@@ -507,3 +526,5 @@
   exodus = true
   perf_graph = true
 []
+
+
