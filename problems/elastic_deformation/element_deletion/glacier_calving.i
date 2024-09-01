@@ -37,6 +37,7 @@
 
 []
 
+
 [GlobalParams]
   displacements = 'disp_x disp_y disp_z'
 []
@@ -156,7 +157,7 @@
   [calving_criterion]
     type = ParsedFunction
     # value = 'if((x>18000.)&(t>0.06), 1000., -1000.)'
-    value = 'if((x>18000.)&(t>4.), 1000., -1000.)'
+    value = 'if((x>19500.)&(t>4.), 1000., -1000.)'
   []
 []
 
