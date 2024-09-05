@@ -128,37 +128,37 @@
   []
 []
 
-[UserObjects]
-  [calving_event]
-    type = CoupledVarThresholdElementSubdomainModifier
-    coupled_var = 'calving_boolean'
-    block = '1 2'
-    criterion_type = ABOVE
-    threshold = 0.
-    subdomain_id = 255
-    moving_boundary_name = downstream 
-    execute_on = 'INITIAL TIMESTEP_BEGIN'
-  []
-[]
+# [UserObjects]
+#   [calving_event]
+#     type = CoupledVarThresholdElementSubdomainModifier
+#     coupled_var = 'calving_boolean'
+#     block = '1 2'
+#     criterion_type = ABOVE
+#     threshold = 0.
+#     subdomain_id = 255
+#     moving_boundary_name = downstream 
+#     execute_on = 'INITIAL TIMESTEP_BEGIN'
+#   []
+# []
 
 [Functions]
   [weight]
     type = ParsedFunction
     value = '-8829*(1000-z)'    # initial stress that should result from the weight force
   []
-  [upstream_dirichlet]
-    type = ParsedFunction
-    value = '0'
-  []
   [ocean_pressure]
     type = ParsedFunction
-    value = '8829*(1000-z)'   
+    expression = 'if(z < 0, -1028*9.81* z, 0)'
   []
-  [calving_criterion]
+  [driving_stress]
     type = ParsedFunction
-    # value = 'if((x>18000.)&(t>0.06), 1000., -1000.)'
-    value = 'if((x>19500.)&(t>4.), 1000., -1000.)'
+    expression = '917*9.81*2000*sin(0.035)' # np.deg2rad(2) = 0.035
   []
+  # [calving_criterion]
+  #   type = ParsedFunction
+  #   # value = 'if((x>18000.)&(t>0.06), 1000., -1000.)'
+  #   value = 'if((x>19500.)&(t>4.), 1000., -1000.)'
+  # []
 []
 
 [Kernels]
@@ -365,12 +365,12 @@
   #   execute_on = timestep_end
   #   block = '1 2'
   # []
-  [calving]
-    type = FunctionAux
-    variable = calving_boolean
-    function = calving_criterion
-    execute_on = 'INITIAL TIMESTEP_BEGIN TIMESTEP_END'
-  []
+  # [calving]
+  #   type = FunctionAux
+  #   variable = calving_boolean
+  #   function = calving_criterion
+  #   execute_on = 'INITIAL TIMESTEP_BEGIN TIMESTEP_END'
+  # []
 []
 
 [Materials]
@@ -392,6 +392,10 @@
     block = '1 2'
   []
   # [stress]
+  #   type = ComputeFiniteStrainElasticStress
+  #   block = '1 2'
+  # []
+  # [stress]
   #   type = ComputeDamageWithoutStressUpdate
   #   block = '1 2'
   #   damage_model = damage
@@ -400,7 +404,7 @@
     type = ComputeMultipleInelasticStress
     tangent_operator = elastic
     inelastic_models = 'creep'
-    max_iterations = 50
+    max_iterations = 100
     absolute_tolerance = 1e-07
     combined_inelastic_strain_weights = '1'
     block = '1 2'
@@ -415,6 +419,7 @@
   []
   [strain_from_initial_stress]
     type = ComputeEigenstrainFromInitialStress
+    # initial_stress = '0 0 0  0 0 0  0 0 0'
     initial_stress = '0 0 0  0 0 0  0 0 weight'
     eigenstrain_name = ini_stress
     block = '1 2'
@@ -439,16 +444,33 @@
 []
 
 [BCs]
-  [upstream_dirichlet]
+  [upstream_dirichlet_x]
     type = DirichletBC                                               
     boundary = 'upstream'
     variable = disp_x
     value    = 0.0
-  []  
+  []
+  # [upstream_dirichlet_y]
+  #   type = DirichletBC                                               
+  #   boundary = 'upstream'
+  #   variable = disp_y
+  #   value    = 0.0
+  # []
+  # [upstream_dirichlet_z]
+  #   type = DirichletBC                                               
+  #   boundary = 'upstream'
+  #   variable = disp_z
+  #   value    = 0.0
+  # []
   [Pressure]
     [downstream_pressure]  
     boundary = downstream
     function = ocean_pressure
+    displacements = 'disp_x disp_y disp_z'
+    []
+    [upstream_pressure]  
+    boundary = upstream
+    function = driving_stress
     displacements = 'disp_x disp_y disp_z'
     []
   []
@@ -499,18 +521,16 @@
 []
 
 [Controls]
-
   [inertia_switch]
     type = TimePeriod
     start_time = 0.0
-    end_time = 0.03
+    end_time = 3 # 0.03
     disable_objects = '*/inertia_x */inertia_y */inertia_z
                        */vel_x */vel_y */vel_z
                        */accel_x */accel_y */accel_z'
     set_sync_times = true
     execute_on = 'timestep_begin timestep_end'
-  []
-  
+  []  
 []
 
 # [Preconditioning]
@@ -526,10 +546,10 @@
   petsc_options_iname = '-pc_type -pc_factor_mat_solver_package'
   petsc_options_value = 'lu       superlu_dist'
   solve_type = 'NEWTON'
-  nl_rel_tol = 1e-7
-  nl_abs_tol = 1e-12
-  dt = 0.02
-  end_time = 30.
+  nl_rel_tol = 1e-5 # 1e-7
+  nl_abs_tol = 1e-5 # 1e-12
+  dt = 1.
+  end_time = 10000. # 30.
   timestep_tolerance = 1e-6
   automatic_scaling = true
   [TimeIntegrator]
@@ -568,7 +588,7 @@
 
 [Outputs]
   exodus = true
-  csv = true
+  # csv = true
   perf_graph = true
 []
 
