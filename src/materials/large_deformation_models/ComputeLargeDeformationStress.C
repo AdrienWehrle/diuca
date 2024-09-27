@@ -7,7 +7,7 @@
 #include "LargeDeformationPlasticityModel.h"
 #include "LargeDeformationViscoelasticityModel.h"
 
-registerMooseObject("raccoonApp", ComputeLargeDeformationStress);
+registerMooseObject("diucaApp", ComputeLargeDeformationStress);
 
 InputParameters
 ComputeLargeDeformationStress::validParams()

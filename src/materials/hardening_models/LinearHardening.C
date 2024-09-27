@@ -5,7 +5,7 @@
 
 #include "LinearHardening.h"
 
-registerMooseObject("raccoonApp", LinearHardening);
+registerMooseObject("diucaApp", LinearHardening);
 
 InputParameters
 LinearHardening::validParams()

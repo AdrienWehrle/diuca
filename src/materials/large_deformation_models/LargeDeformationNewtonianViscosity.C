@@ -4,7 +4,7 @@
 
 #include "LargeDeformationNewtonianViscosity.h"
 
-registerMooseObject("raccoonApp", LargeDeformationNewtonianViscosity);
+registerMooseObject("diucaApp", LargeDeformationNewtonianViscosity);
 
 InputParameters
 LargeDeformationNewtonianViscosity::validParams()

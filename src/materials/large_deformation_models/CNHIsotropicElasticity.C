@@ -5,7 +5,7 @@
 #include "CNHIsotropicElasticity.h"
 #include "RaccoonUtils.h"
 
-registerMooseObject("raccoonApp", CNHIsotropicElasticity);
+registerMooseObject("diucaApp", CNHIsotropicElasticity);
 
 InputParameters
 CNHIsotropicElasticity::validParams()

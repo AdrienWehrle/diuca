@@ -5,7 +5,7 @@
 #include "LargeDeformationJ2PowerLawCreep.h"
 #include "RaccoonUtils.h"
 
-registerMooseObject("raccoonApp", LargeDeformationJ2PowerLawCreep);
+registerMooseObject("diucaApp", LargeDeformationJ2PowerLawCreep);
 
 InputParameters
 LargeDeformationJ2PowerLawCreep::validParams()

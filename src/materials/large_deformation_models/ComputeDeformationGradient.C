@@ -4,7 +4,7 @@
 
 #include "ComputeDeformationGradient.h"
 
-registerADMooseObject("raccoonApp", ComputeDeformationGradient);
+registerADMooseObject("diucaApp", ComputeDeformationGradient);
 
 InputParameters
 ComputeDeformationGradient::validParams()

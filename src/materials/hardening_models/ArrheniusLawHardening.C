@@ -4,7 +4,7 @@
 
 #include "ArrheniusLawHardening.h"
 
-registerMooseObject("raccoonApp", ArrheniusLawHardening);
+registerMooseObject("diucaApp", ArrheniusLawHardening);
 
 InputParameters
 ArrheniusLawHardening::validParams()

@@ -4,7 +4,7 @@
 
 #include "JohnsonCookHardening.h"
 
-registerMooseObject("raccoonApp", JohnsonCookHardening);
+registerMooseObject("diucaApp", JohnsonCookHardening);
 
 InputParameters
 JohnsonCookHardening::validParams()

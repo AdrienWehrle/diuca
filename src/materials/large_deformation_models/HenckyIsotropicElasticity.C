@@ -5,7 +5,7 @@
 #include "HenckyIsotropicElasticity.h"
 #include "RaccoonUtils.h"
 
-registerMooseObject("raccoonApp", HenckyIsotropicElasticity);
+registerMooseObject("diucaApp", HenckyIsotropicElasticity);
 
 InputParameters
 HenckyIsotropicElasticity::validParams()

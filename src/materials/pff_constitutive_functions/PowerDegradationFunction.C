@@ -4,7 +4,7 @@
 
 #include "PowerDegradationFunction.h"
 
-registerMooseObject("raccoonApp", PowerDegradationFunction);
+registerMooseObject("diucaApp", PowerDegradationFunction);
 
 InputParameters
 PowerDegradationFunction::validParams()

@@ -4,7 +4,7 @@
 
 #include "CrackGeometricFunction.h"
 
-registerMooseObject("raccoonApp", CrackGeometricFunction);
+registerMooseObject("diucaApp", CrackGeometricFunction);
 
 InputParameters
 CrackGeometricFunction::validParams()

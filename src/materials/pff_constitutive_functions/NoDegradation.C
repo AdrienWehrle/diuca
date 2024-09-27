@@ -4,7 +4,7 @@
 
 #include "NoDegradation.h"
 
-registerMooseObject("raccoonApp", NoDegradation);
+registerMooseObject("diucaApp", NoDegradation);
 
 InputParameters
 NoDegradation::validParams()

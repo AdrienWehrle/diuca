@@ -5,7 +5,7 @@
 #include "LargeDeformationJ2Plasticity.h"
 #include "RaccoonUtils.h"
 
-registerMooseObject("raccoonApp", LargeDeformationJ2Plasticity);
+registerMooseObject("diucaApp", LargeDeformationJ2Plasticity);
 
 InputParameters
 LargeDeformationJ2Plasticity::validParams()

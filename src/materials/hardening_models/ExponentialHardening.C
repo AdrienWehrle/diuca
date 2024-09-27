@@ -4,7 +4,7 @@
 
 #include "ExponentialHardening.h"
 
-registerMooseObject("raccoonApp", ExponentialHardening);
+registerMooseObject("diucaApp", ExponentialHardening);
 
 InputParameters
 ExponentialHardening::validParams()

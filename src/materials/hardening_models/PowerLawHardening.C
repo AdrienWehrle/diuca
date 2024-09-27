@@ -4,7 +4,7 @@
 
 #include "PowerLawHardening.h"
 
-registerMooseObject("raccoonApp", PowerLawHardening);
+registerMooseObject("diucaApp", PowerLawHardening);
 
 InputParameters
 PowerLawHardening::validParams()

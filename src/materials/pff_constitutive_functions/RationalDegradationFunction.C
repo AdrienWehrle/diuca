@@ -4,7 +4,7 @@
 
 #include "RationalDegradationFunction.h"
 
-registerMooseObject("raccoonApp", RationalDegradationFunction);
+registerMooseObject("diucaApp", RationalDegradationFunction);
 
 InputParameters
 RationalDegradationFunction::validParams()
