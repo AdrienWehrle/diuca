@@ -3,7 +3,7 @@ nu = 0.32
 K = '${fparse E/3/(1-2*nu)}'
 G = '${fparse E/2/(1+nu)}'
 
-Gc = 0.1 # 2.7 # probably in MPa? # KIC = 100 kPa m1/2
+Gc = 1e5 # 1.5e2 # d=1: 1e2 # 0.1 # 2.7 # probably in MPa? # KIC = 100 kPa m1/2
 l = 0.02 # 0.02
 
 [MultiApps]
@@ -96,24 +96,24 @@ l = 0.02 # 0.02
 []
 
 [Kernels]
-  # [gravity_x]
-  #   type = Gravity
-  #   variable = disp_x
-  #   value= 0.
-  #   block = '1 2'
-  # []
-  # [gravity_y]
-  #   type = Gravity
-  #   variable = disp_y
-  #   value = 0.
-  #   block = '1 2'
-  # []
-  # [gravity_z]
-  #   type = Gravity
-  #   variable = disp_z
-  #   value = -9.81
-  #   block = '1 2'
-  # []
+  [gravity_x]
+    type = Gravity
+    variable = disp_x
+    value= 0.
+    block = '1 2'
+  []
+  [gravity_y]
+    type = Gravity
+    variable = disp_y
+    value = 0.
+    block = '1 2'
+  []
+  [gravity_z]
+    type = Gravity
+    variable = disp_z
+    value = -9.81
+    block = '1 2'
+  []
   [solid_x]
     type = ADStressDivergenceTensors
     variable = disp_x
@@ -150,26 +150,21 @@ l = 0.02 # 0.02
     type = DirichletBC
     variable = disp_x
     value = 0
-    boundary = 'bottom'
+    boundary = 'bottom left right upstream'
   []
   [dirichlet_bottom_y]
     type = DirichletBC
     variable = disp_y
     value = 0
-    boundary = 'bottom'
+    boundary = 'bottom left right upstream'
   []
   [dirichlet_bottom_z]
     type = DirichletBC
     variable = disp_z
     value = 0
-    boundary = 'bottom'
+    boundary = 'bottom left right upstream'
   []
-  [left_x]
-    type = DirichletBC
-    variable = disp_x
-    value = 0.01
-    boundary = 'left'
-  []
+  
 []
 
 [Functions]
@@ -177,17 +172,13 @@ l = 0.02 # 0.02
     type = ParsedFunction
     value = '-8829*(1000-z)'    # initial stress that should result from the weight force
   []
-  [upstream_dirichlet]
-    type = ParsedFunction
-    value = '0'
-  []
   [ocean_pressure]
     type = ParsedFunction
     value = '8829*(1000-z)'   
   []
   [calving_criterion]
     type = ParsedFunction
-    value = 'if((x>18000.)&(t>0.001), 1000., -1000.)'
+    value = 'if((x>18000.)&(t>1e10), 1000., -1000.)'
   []
 []
 
@@ -200,7 +191,7 @@ l = 0.02 # 0.02
   [density]
     type = GenericConstantMaterial
     prop_names = density
-    prop_values = 900 #kg/m3
+    prop_values = 917 #kg/m3
     block = '1 2'
   []
   [degradation]
@@ -208,8 +199,8 @@ l = 0.02 # 0.02
     property_name = g
     expression = (1-d)^p*(1-eta)+eta
     phase_field = d
-    parameter_names = 'p eta '
-    parameter_values = '2 1e-6'
+    parameter_names = 'p eta'
+    parameter_values = '1 1'
   []
   [strain]
     type = ADComputeSmallStrain

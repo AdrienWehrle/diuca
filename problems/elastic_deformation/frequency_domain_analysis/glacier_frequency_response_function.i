@@ -5,14 +5,16 @@
   elem_type = HEX8
   dim = 3
   xmin = 0
-  xmax = 10000.
-  nx = 20
+  xmax = 5000.
+  nx = 40
   zmin = 0
   zmax = 5000.
-  ny = 10
-  ymin = -1000.
+  ny = 6
+  # ymin = -1000.
+  # ymax = 500.
+  ymin = 0.
   ymax = 500.
-  nz = 10
+  nz = 40
 []
 
 [GlobalParams]
@@ -78,85 +80,138 @@
 []
 
 [BCs]
-  # [dirichlet_bottom_x]
+
+  # [Pressure]
+  #   [ice_pressure_side1]  
+  #   boundary = "left back"
+  #   function = ice_pressure_positive
+  #   displacements = 'disp_x'
+  #   []
+  #   [ice_pressure_side2]  
+  #   boundary = "right front"
+  #   function = ice_pressure_positive
+  #   displacements = 'disp_z'
+  #   []
+  # []
+  
+  [dirichlet_bottom_x]
+    type = DirichletBC
+    variable = disp_x
+    value = 0
+    boundary = 'bottom'
+  []
+  [dirichlet_bottom_z]
+    type = DirichletBC
+    variable = disp_z
+    value = 0
+    boundary = 'bottom'
+  []
+  [dirichlet_bottom_y]
+    type = DirichletBC
+    variable = disp_y
+    value = 0
+    boundary = 'bottom'
+  []
+  
+  # [dirichlet_front_x]
   #   type = DirichletBC
   #   variable = disp_x
   #   value = 0
-  #   boundary = 'bottom'
+  #   boundary = 'front'
   # []
-  # [dirichlet_bottom_y]
+  # [dirichlet_front_y]
   #   type = DirichletBC
   #   variable = disp_y
   #   value = 0
-  #   boundary = 'bottom'
+  #   boundary = 'front'
   # []
-  # [dirichlet_bottom_z]
+  # [dirichlet_front_z]
   #   type = DirichletBC
   #   variable = disp_z
   #   value = 0
-  #   boundary = 'bottom'
+  #   boundary = 'front'
   # []
 
-  [dirichlet_front_x]
-    type = DirichletBC
+  # [dirichlet_back_x]
+  #   type = DirichletBC
+  #   variable = disp_x
+  #   value = 0
+  #   boundary = 'back'
+  # []
+  # [dirichlet_back_y]
+  #   type = DirichletBC
+  #   variable = disp_y
+  #   value = 0
+  #   boundary = 'back'
+  # []
+  # [dirichlet_back_z]
+  #   type = DirichletBC
+  #   variable = disp_z
+  #   value = 0
+  #   boundary = 'back'
+  # []
+
+  [back_xreal]
+    type = NeumannBC
     variable = disp_x
-    value = 0
-    boundary = 'front'
+    boundary = 'back'
+    value = 1000
   []
-  [dirichlet_front_y]
-    type = DirichletBC
+  [back_yreal]
+    type = NeumannBC
     variable = disp_y
-    value = 0
-    boundary = 'front'
+    boundary = 'back'
+    value = 1000
   []
-  [dirichlet_front_z]
-    type = DirichletBC
+  [back_zreal]
+    type = NeumannBC
     variable = disp_z
-    value = 0
-    boundary = 'front'
+    boundary = 'back'
+    value = 1000
   []
 
-  [dirichlet_back_x]
-    type = DirichletBC
+  [front_xreal]
+    type = NeumannBC
     variable = disp_x
-    value = 0
-    boundary = 'back'
+    boundary = 'front'
+    value = 1000
   []
-  [dirichlet_back_y]
-    type = DirichletBC
+  [front_yreal]
+    type = NeumannBC
     variable = disp_y
-    value = 0
-    boundary = 'back'
+    boundary = 'front'
+    value = 1000
   []
-  [dirichlet_back_z]
-    type = DirichletBC
+  [front_zreal]
+    type = NeumannBC
     variable = disp_z
-    value = 0
-    boundary = 'back'
+    boundary = 'front'
+    value = 1000
   []
 
-  [top_xreal]
-    type = NeumannBC
-    variable = disp_x
-    boundary = 'top'
-    value = 1000
-  []
-  [top_yreal]
-    type = NeumannBC
-    variable = disp_y
-    boundary = 'top'
-    value = 1000
-  []
-  [top_zreal]
-    type = NeumannBC
-    variable = disp_z
-    boundary = 'top'
-    value = 1000
-  []
+
+  # [top_xreal]
+  #   type = NeumannBC
+  #   variable = disp_x
+  #   boundary = 'top'
+  #   value = 1000
+  # []
+  # [top_yreal]
+  #   type = NeumannBC
+  #   variable = disp_y
+  #   boundary = 'top'
+  #   value = 1000
+  # []
+  # [top_zreal]
+  #   type = NeumannBC
+  #   variable = disp_z
+  #   boundary = 'top'
+  #   value = 1000
+  # []
 
   [right_xreal]
     type = NeumannBC
-    variable = disp_x
+    variable = disp_z
     boundary = 'right'
     value = 1000
   []
@@ -175,7 +230,7 @@
 
   [left_xreal]
     type = NeumannBC
-    variable = disp_x
+    variable = disp_z
     boundary = 'left'
     value = 1000
   []
@@ -237,8 +292,16 @@
   [freq2]
     type = ParsedFunction
     symbol_names = density
-    symbol_values = 2.7e3 #Al kg/m3
+    symbol_values = 917 # 2.7e3 #Al kg/m3
     expression = '-t*t*density'
+  []
+  [ice_pressure_positive]
+    type = ParsedFunction
+    value = '917*9.81*(600-z)'   
+  []
+  [ice_pressure_negative]
+    type = ParsedFunction
+    value = '-917*9.81*(600-z)'   
   []
 []
 
@@ -257,16 +320,15 @@
   petsc_options_iname = ' -pc_type'
   petsc_options_value = 'lu'
   start_time = 0.01 #starting frequency
-  end_time =  1.  #ending frequency
+  end_time =  5.  #ending frequency
   nl_abs_tol = 1e-6
   [TimeStepper]
     type = ConstantDT
-    dt = 0.05  #frequency stepsize
+    dt = 0.1  #frequency stepsize
   []
 []
 
 [Outputs]
   csv=true
   exodus=true
-  console = false
 []

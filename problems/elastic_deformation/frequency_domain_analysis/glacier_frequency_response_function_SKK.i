@@ -1,7 +1,7 @@
 # from moose/modules/solid_mechanics/examples/wave_propagation/cantilever_sweep.i
 
 # choose if bed is coupled or not
-bed_coupled = 1
+bed_coupled = 0
 
 [Mesh]
   [channel]      
@@ -222,7 +222,7 @@ bed_coupled = 1
   [freq2]
     type = ParsedFunction
     symbol_names = density
-    symbol_values = 2.7e3 #Al kg/m3
+    symbol_values = 917 # 2.7e3 #Al kg/m3
     expression = '-t*t*density'
   []
   [bed_coupling_function]
@@ -253,11 +253,11 @@ bed_coupled = 1
   petsc_options_iname = ' -pc_type'
   petsc_options_value = 'lu'
   start_time = 0.01 #starting frequency
-  end_time =  10.  #ending frequency
+  end_time =  5.  #ending frequency
   nl_abs_tol = 1e-8
   [TimeStepper]
     type = ConstantDT
-    dt = 0.1  #frequency stepsize
+    dt = 0.01  #frequency stepsize
   []
 []
 
