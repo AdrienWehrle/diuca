@@ -15,7 +15,7 @@
 sliding_law = "GudmundssonRaymond"
 # sediment_layer_thickness = 50.
 sediment_layer_thickness = 50.
-slipperiness_coefficient_mmpaa = 3e6 # 3e4 # 3e3 # 9.512937595129376e-11
+slipperiness_coefficient_mmpaa = 3e4 # 3e4 # 3e3 # 9.512937595129376e-11
 slipperiness_coefficient = '${fparse (slipperiness_coefficient_mmpaa * 1e-6) / (365*24*3600)}' # 
 
 # Ryser et al 2014 seems to use sediment viscosities between 5e14 and 1e13 Pas
@@ -562,8 +562,12 @@ initial_II_eps_min = 1e-07
   type = Transient
   num_steps = 100
 
-  petsc_options_iname = '-pc_type -pc_factor_shift'
+  # petsc_options_iname = '-pc_type -pc_factor_shift'
+  # petsc_options_value = 'lu       NONZERO'
+
+  petsc_options_iname = '-pc_type -pc_factor_shift_type'
   petsc_options_value = 'lu       NONZERO'
+
   # petsc_options = '-pc_svd_monitor'
   # petsc_options_iname = '-pc_type'
   # petsc_options_value = 'svd'
